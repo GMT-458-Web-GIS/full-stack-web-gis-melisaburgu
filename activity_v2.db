@@ -1,0 +1,7 @@
+{"action":"LOGIN_FAILED","user":"admin","timestamp":{"$$date":1768065315704},"details":{"success":false},"_id":"4LanBR7NSYVQentF"}
+{"action":"LOGIN","user":"admin2","timestamp":{"$$date":1768065353161},"details":{"success":true},"_id":"9yj35agLsFdORltY"}
+{"action":"LOGIN_FAILED","user":"admin2","timestamp":{"$$date":1768065341647},"details":{"success":false},"_id":"AWxrReF5Ky6MH9nf"}
+{"action":"ADD_FEATURE","user":"admin2","timestamp":{"$$date":1768065373350},"details":{"featureName":"melisa","type":"point"},"_id":"QK36R7zf4qyHxIDa"}
+{"action":"SYSTEM_START","user":"Server","timestamp":{"$$date":1768065304415},"details":{"info":"Cache-Control Enabled"},"_id":"YOqb8JKR7TwvFCZw"}
+{"action":"SYSTEM_START","user":"Server","timestamp":{"$$date":1768066162005},"details":{"info":"Swagger JSON Mode"},"_id":"j6REWni0xyYuzJlJ"}
+{"action":"SYSTEM_START","user":"Server","timestamp":{"$$date":1768066516770},"details":{"info":"Swagger JSON Mode"},"_id":"iwFbMZq4AVYcTdo6"}
