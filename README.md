@@ -10,24 +10,24 @@
 
 ## 📋 Table of Contents
 
-1. [Project Overview]
+1. [Project Overview](#1-project-overview)
 
-2. [Key Features & Implementation Strategy]
+2. [Key Features & Implementation Strategy](#2-key-features--implementation-strategy)
     - User Management (Color Logic & RBAC)
     - Geospatial Core (CRUD, Filtering & User-Specific Styling)
     - NoSQL Database Architecture
     - Modern GeoServer Integration (WFS/WMS)
     - Advanced UI/UX (Search, Geolocation, Logs)
 
-3. [Performance Engineering]
+3. [Performance Engineering](#3-performance-engineering)
     - Optimization (Database Indexing)
     - Load & Stress Testing (Artillery)
 
-4. [API Documentation (Swagger)]
+4. [API Documentation (Swagger)](#4-api-documentation-swagger)
 
-5. [Live Deployment (AWS/Tunneling)]
+5. [Live Deployment (AWS/Tunneling)](#5-live-deployment)
 
-6. [Installation & Setup]
+6. [Installation & Setup](#6-installation--setup)
 
 ---
 
@@ -59,10 +59,14 @@ We implemented a secure JWT-based (simulated via tokens) authentication system t
 * **Security Rules:** Enforces strong password policies using Regex (minimum 6 characters, at least one uppercase letter).
 
 **Evidence: Registration Form with Color Picker**
-<div style="display: flex; gap: 10px;">
-  <img src="./screenshots/Auth_Register.png" alt="Registration Screen" width="45%">
-  <img src="./screenshots/Auth_Login.png" alt="Login Screen" width="45%">
-</div>
+![Registration Screen](./screenshots/Auth_Register.png)
+*(Above: The registration form highlighting custom color selection and password rules.)*
+
+**Evidence: Login Screen**
+![Login Screen](./screenshots/Auth_Login.png)
+*(Above: The secure login interface.)*
+
+---
 
 ### 👥 2.2. User Types & Role-Based Access Control (20%)
 
@@ -72,9 +76,13 @@ The system implements a distinct Role-Based Access Control (RBAC) mechanism with
 2.  **User (Standard):** Can create and manage their own spatial features.
 3.  **Viewer:** Read-only access.
 
-**Evidence: Authenticated Dashboard**
+**Evidence: Role Selection during Registration**
+![Role Selection Dropdown](./screenshots/RBAC.png)
+*(Above: The registration form clearly showing the three distinct role options available for new users.)*
+
+**Evidence: Authenticated Admin Dashboard**
 ![Admin Dashboard](./screenshots/Auth_Login_In.png)
-*(Note: The user's name "melisa" is displayed in their chosen custom color (purple/blue) in the top-left profile section.)*
+*(Above: The dashboard view for a logged-in "Admin" user (melisa), showing their custom color and role indicator in the top-left.)*
 
 ---
 
@@ -89,6 +97,7 @@ The core of GeoMaster is its ability to manage spatial data with user-specific v
 
 **Evidence: API Filtering & Colored Drawings**
 ![Filtering Data via API](./screenshots/Data_Filtering.png)
+*(Above: The API response showing data filtered by `?type=Point`.)*
 
 ---
 
@@ -98,6 +107,7 @@ We deliberately chose a **NoSQL (Document-based)** approach using NeDB. This all
 
 **Evidence: Raw Database File (JSON Structure)**
 ![Raw Database File](./screenshots/NoSQL_Database_File.png)
+*(Above: A view of the `features.db` file demonstrating the native JSON storage format.)*
 
 ---
 
@@ -107,11 +117,13 @@ We implemented custom endpoints within our Node.js server that simulate OGC-comp
 * **WFS Endpoint:** `/geoserver/wfs` (GeoJSON).
 * **WMS Endpoint:** `/geoserver/wms` (Capabilities XML).
 
-**Evidence: WFS and WMS Endpoints**
-<div style="display: flex; gap: 10px;">
-  <img src="./screenshots/WFS.png" alt="WFS GeoJSON Output" width="45%">
-  <img src="./screenshots/WMS.png" alt="WMS XML Output" width="45%">
-</div>
+**Evidence: WFS GeoJSON Output**
+![WFS GeoJSON Output](./screenshots/WFS.png)
+*(Above: The raw GeoJSON FeatureCollection served by the custom WFS endpoint.)*
+
+**Evidence: WMS Capabilities XML Output**
+![WMS XML Output](./screenshots/WMS.png)
+*(Above: The standard XML document served by the custom WMS endpoint.)*
 
 ---
 
@@ -125,12 +137,15 @@ We enhanced the user experience with several professional GIS tools, all visible
 4.  **Smart Search:** A search bar allows users to find features by name and automatically pans the map to the result.
 5.  **Dark/Light Mode:** Users can toggle the interface theme for better visibility in different lighting conditions.
 
-**Evidence: System Logs & UI Tools**
-<div style="display: flex; gap: 10px;">
-  <img src="./screenshots/System_Logs_Panel.png" alt="System Activity Logs" width="45%">
-  <img src="./screenshots/Auth_Login_In.png" alt="Map Tools (Search, Locate, Coords)" width="45%">
-</div>
-*(Left: The open Logs panel showing detailed system actions. Right: The main interface showing the Search bar, Locate button, and Coordinate display.)*
+**Evidence: System Logs Panel**
+
+![System Activity Logs](./screenshots/System_Logs_Panel.png)
+
+*(Above: The open Logs panel displaying detailed system actions.)*
+
+**Evidence: Main Interface UI Tools**
+![Map Tools](./screenshots/Auth_Login_In.png)
+*(Above: The main dashboard highlighting the Search bar, Locate button, and live Coordinate display in the corners.)*
 
 ---
 
@@ -143,6 +158,8 @@ We enhanced the user experience with several professional GIS tools, all visible
 
 **Evidence: Terminal Output**
 ![Indexing Performance Test](./screenshots/performance_monitoring.png)
+
+---
 
 ### 🔥 3.2. Load & Stress Testing (Artillery) (25%)
 
