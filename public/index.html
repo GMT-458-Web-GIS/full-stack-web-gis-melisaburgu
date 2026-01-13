@@ -3,93 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GeoMaster | Space GIS</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>GeoMaster Pro</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <div id="login-screen">
-        <div class="glass-panel">
-            <div class="logo-area">
-                <i class="fa-solid fa-user-astronaut fa-3x bounce"></i>
-                <h1>Geo<span class="gradient-text">Master</span></h1>
-                <p>Advanced Spatial Data Platform</p>
-            </div>
-            <div id="login-form">
-                <div class="input-group"><i class="fa-solid fa-user"></i><input type="text" id="l-username" placeholder="Username"></div>
-                <div class="input-group"><i class="fa-solid fa-lock"></i><input type="password" id="l-password" placeholder="Password"></div>
-                <button onclick="login()" class="btn-glow">ENTER SYSTEM</button>
-                <p class="switch-text" onclick="toggleAuth()">Create Access Account</p>
-            </div>
-            <div id="register-form" style="display:none;">
-                <div class="input-group"><i class="fa-solid fa-user-plus"></i><input type="text" id="r-username" placeholder="New Username"></div>
-                <div class="input-group"><i class="fa-solid fa-key"></i><input type="password" id="r-password" placeholder="New Password"></div>
-                <div class="row">
-                    <select id="r-role" style="flex:2"><option value="viewer">Viewer</option><option value="editor">Editor</option><option value="admin">Admin</option></select>
-                    <input type="color" id="r-color" value="#00d2d3" style="flex:1; height:45px; border:none; cursor:pointer;">
+    <button id="themeBtn" onclick="toggleTheme()">☀️</button>
+
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>🚀 GEOMASTER</h2>
+            <div id="userDisplay" style="color:#00f3ff; font-size:14px;">Welcome</div>
+        </div>
+
+        <div class="scroll-area">
+            <div class="panel-section">
+                <h3>🛠️ DRAWING TOOLS</h3>
+                <div class="draw-buttons">
+                    <button onclick="startCustomDraw('marker')">📍 Point</button>
+                    <button onclick="startCustomDraw('polyline')">〰 Line</button>
+                    <button onclick="startCustomDraw('polygon')">⬠ Area</button>
                 </div>
-                <button onclick="register()" class="btn-glow">INITIALIZE USER</button>
-                <p class="switch-text" onclick="toggleAuth()">Back to Login</p>
+                <button onclick="cancelDrawing()" style="background:#ef4444; margin-top:5px; display:none;" id="cancelDrawBtn">❌ Cancel Drawing</button>
+            </div>
+
+            <div class="panel-section">
+                <h3>🔍 SEARCH</h3>
+                <div style="display:flex; gap:5px;">
+                    <input type="text" id="searchInput" placeholder="Search feature name...">
+                    <button onclick="searchFeature()" style="width:40px;">Go</button>
+                </div>
+            </div>
+
+            <div class="panel-section">
+                <h3>📡 NAVIGATION</h3>
+                <button onclick="locateUser()">📍 Locate Me</button>
+            </div>
+
+            <div class="panel-section">
+                <h3>📜 SYSTEM LOGS</h3>
+                <button onclick="toggleLogs()" id="logToggleBtn">Show Logs</button>
+                <div id="logArea"></div>
+            </div>
+        </div>
+
+        <button id="logoutBtn" onclick="logout()">🛑 LOGOUT</button>
+    </div>
+
+    <div id="map"></div>
+
+    <div id="coordsBox">Lat: 0.0000 | Lng: 0.0000</div>
+
+    <div id="saveModal" class="modal-overlay">
+        <div class="modal-box">
+            <h3>💾 SAVE FEATURE</h3>
+            <p>Enter a name for this object:</p>
+            <input type="text" id="featureNameInput" placeholder="Feature Name">
+            <div class="modal-btns">
+                <button onclick="confirmSave()" style="background:#22c55e;">SAVE</button>
+                <button onclick="closeModal()" style="background:#ef4444;">CANCEL</button>
             </div>
         </div>
     </div>
 
-    <div id="app-screen" style="display:none;">
-        <div id="sidebar" class="glass-sidebar">
-            <div class="brand"><i class="fa-solid fa-meteor"></i> GeoMaster</div>
-            <div class="user-profile">
-                <div class="avatar" id="user-avatar">U</div>
-                <div><h4 id="display-user">User</h4><span id="display-role" class="badge">Role</span></div>
-            </div>
-            <div class="section-title">DATA FILTER</div>
-            <div class="search-box">
-                <i class="fa-solid fa-magnifying-glass"></i>
-                <input type="text" id="search-input" placeholder="Search..." onkeyup="filterFeatures()">
-            </div>
-            <div class="stats-card"><h3>Active Objects</h3><h1 id="feature-count">0</h1></div>
-            
-            <div class="menu">
-                <button onclick="locateMe()" class="menu-btn"><i class="fa-solid fa-location-crosshairs"></i> Locate Me</button>
-                <button onclick="zoomToHome()" class="menu-btn"><i class="fa-solid fa-house"></i> Reset View</button>
-                <button onclick="showLogs()" class="menu-btn" style="color:#f1c40f"><i class="fa-solid fa-database"></i> System Logs</button>
-                <button onclick="logout()" class="logout-btn"><i class="fa-solid fa-right-from-bracket"></i> LOGOUT</button>
-            </div>
-            <div class="footer-info">LAT: <span id="mouse-lat">0.00</span> | LNG: <span id="mouse-lng">0.00</span></div>
-        </div>
-
-        <div class="theme-toggle" onclick="toggleTheme()"><i class="fa-solid fa-moon" id="theme-icon"></i></div>
-        <div class="map-switcher">
-            <button onclick="changeLayer('street')" class="active" id="btn-street">Street</button>
-            <button onclick="changeLayer('satellite')" id="btn-sat">Satellite</button>
-        </div>
-        <div class="draw-dock">
-            <div class="dock-title">CREATION TOOLS</div>
-            <div class="dock-buttons">
-                <button onclick="setDrawMode('point')" class="tool-btn"><i class="fa-solid fa-location-dot"></i></button>
-                <button onclick="setDrawMode('line')" class="tool-btn"><i class="fa-solid fa-share-nodes"></i></button>
-                <button onclick="setDrawMode('polygon')" class="tool-btn"><i class="fa-solid fa-draw-polygon"></i></button>
-                <button onclick="setDrawMode(null)" class="tool-btn cancel"><i class="fa-solid fa-ban"></i></button>
-            </div>
-            <div id="current-mode" style="font-size:10px; color:#4cd137; margin-top:5px; font-weight:bold;">READY</div>
-        </div>
-        <div id="map"></div>
-    </div>
-
-    <div id="log-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; align-items:center; justify-content:center;">
-        <div class="glass-panel" style="width:600px; text-align:left; max-height:80vh; display:flex; flex-direction:column; background:#1e272e; border:1px solid #444;">
-            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.2); padding-bottom:15px; margin-bottom:15px;">
-                <h2 style="margin:0; font-size:20px; color:#f1c40f;"><i class="fa-solid fa-database"></i> System Logs</h2>
-                <i class="fa-solid fa-xmark" onclick="closeLogs()" style="cursor:pointer; font-size:24px; color:white;"></i>
-            </div>
-            <div id="log-content" style="flex-grow:1; overflow-y:auto; font-family:'Courier New', monospace; font-size:12px; color:#ddd; min-height:100px;">Loading...</div>
-            <button onclick="closeLogs()" class="btn-glow" style="margin-top:20px; background: #e74c3c;">CLOSE PANEL</button>
-        </div>
-    </div>
-
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
     <script src="app.js"></script>
 </body>
 </html>

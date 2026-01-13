@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GeoMaster Access</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0; padding: 0;
+            font-family: 'Rajdhani', sans-serif;
+            height: 100vh;
+            display: flex; justify-content: center; align-items: center;
+            background: url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop') no-repeat center center fixed;
+            background-size: cover;
+            overflow: hidden;
+        }
+        body::before {
+            content: ""; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.7); z-index: -1;
+        }
+        
+        /* --- YÜZEN KUTU ANIMASYONU --- */
+        .container {
+            width: 400px; padding: 40px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            border: 1px solid rgba(0, 243, 255, 0.2);
+            box-shadow: 0 0 40px rgba(0, 243, 255, 0.15);
+            text-align: center;
+            position: relative;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        h2 {
+            font-family: 'Orbitron', sans-serif; font-size: 36px; margin-bottom: 20px;
+            background: linear-gradient(90deg, #00f3ff, #bc00dd);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(0, 243, 255, 0.5); letter-spacing: 2px;
+            margin-top: 0;
+        }
+        .input-group { margin-bottom: 15px; text-align: left; }
+        label { color: #00f3ff; font-size: 14px; display: block; margin-bottom: 5px; letter-spacing: 1px; }
+        input, select {
+            width: 100%; padding: 12px; background: rgba(15, 23, 42, 0.8);
+            border: 1px solid #334155; color: white; border-radius: 5px;
+            font-family: 'Rajdhani', sans-serif; font-size: 16px; box-sizing: border-box;
+        }
+        button {
+            width: 100%; padding: 15px; margin-top: 20px; border: none; border-radius: 5px;
+            font-family: 'Orbitron', sans-serif; font-weight: bold; font-size: 16px;
+            cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px;
+        }
+        .btn-primary { background: linear-gradient(90deg, #00f3ff, #0066ff); color: #0f172a; }
+        .btn-primary:hover { box-shadow: 0 0 20px rgba(0, 243, 255, 0.6); color: white; transform: scale(1.02); }
+        .btn-toggle { background: transparent; color: #94a3b8; font-size: 14px; margin-top: 10px; font-family: 'Rajdhani', sans-serif; }
+        .btn-toggle:hover { color: #00f3ff; text-decoration: underline; }
+        
+        #loginForm { display: block; }
+        #registerForm { display: none; }
+        
+        .password-rules { font-size: 11px; color: #aaa; text-align: left; margin-top: -10px; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="loginForm">
+            <h2>GEOMASTER</h2>
+            <div class="input-group"><label>USERNAME</label><input type="text" id="loginUser" placeholder="Enter Username"></div>
+            <div class="input-group"><label>PASSWORD</label><input type="password" id="loginPass" placeholder="Enter Password"></div>
+            
+            <button class="btn-primary" onclick="login()">LOG IN</button>
+            <button class="btn-toggle" onclick="toggleForm()">Create New Account</button>
+        </div>
+        
+        <div id="registerForm">
+            <h2>REGISTER</h2>
+            <div class="input-group"><label>USERNAME</label><input type="text" id="regUser" placeholder="Choose a Username"></div>
+            
+            <div class="input-group">
+                <label>PASSWORD</label>
+                <input type="password" id="regPass" placeholder="Strong Password">
+            </div>
+            <div class="password-rules">
+                * Min 6 characters<br>
+                * At least 1 Uppercase (A-Z)<br>
+                * At least 1 Number or Special Character
+            </div>
+
+            <div class="input-group">
+                <label>ROLE</label>
+                <select id="regRole">
+                    <option value="user">User (Standard)</option>
+                    <option value="viewer">Viewer (Read Only)</option>
+                    <option value="admin">Admin (Full Access)</option>
+                </select>
+            </div>
+            <div class="input-group"><label>YOUR COLOR</label><input type="color" id="regColor" value="#00f3ff" style="height:45px; cursor:pointer;"></div>
+            <button class="btn-primary" style="background: linear-gradient(90deg, #d946ef, #8b5cf6);" onclick="register()">SIGN UP</button>
+            <button class="btn-toggle" onclick="toggleForm()">Back to Login</button>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "http://localhost:3000/api";
+
+        function toggleForm() {
+            const loginF = document.getElementById('loginForm');
+            const regF = document.getElementById('registerForm');
+            if (loginF.style.display === 'none') {
+                loginF.style.display = 'block'; regF.style.display = 'none';
+            } else {
+                loginF.style.display = 'none'; regF.style.display = 'block';
+            }
+        }
+
+        async function login() {
+            const u = document.getElementById('loginUser').value, p = document.getElementById('loginPass').value;
+            if(!u || !p) { alert("Please enter credentials."); return; }
+            try {
+                const res = await fetch(`${API_URL}/login`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({username:u, password:p}) });
+                const d = await res.json();
+                if(d.success) {
+                    localStorage.setItem('token', d.token); 
+                    localStorage.setItem('username', d.username); 
+                    localStorage.setItem('userColor', d.color);
+                    localStorage.setItem('role', d.role);
+                    window.location.href = "index.html";
+                } else alert("ACCESS DENIED: " + d.message);
+            } catch(e) { alert("Connection Error"); }
+        }
+
+        async function register() {
+            const u = document.getElementById('regUser').value;
+            const p = document.getElementById('regPass').value;
+            const r = document.getElementById('regRole').value;
+            const c = document.getElementById('regColor').value;
+
+            if(!u || !p) { alert("Please fill all fields."); return; }
+            
+            // Validasyonlar
+            if (p.length < 6) { alert("Password must be at least 6 characters long!"); return; }
+            if (!/[A-Z]/.test(p)) { alert("Password must contain at least one Uppercase letter (A-Z)!"); return; }
+            if (!/[0-9!@#\$%\^\&*\)\(+=._-]/.test(p)) { alert("Password must contain at least one number or special character!"); return; }
+
+            try {
+                const res = await fetch(`${API_URL}/register`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({username:u, password:p, role:r, color:c}) });
+                const d = await res.json();
+                
+                if(d.success) { 
+                    alert("Account Created! Please Log In."); 
+                    toggleForm(); 
+                } else { 
+                    alert("Error: " + d.error); 
+                }
+            } catch(e) { alert("System Error"); }
+        }
+    </script>
+</body>
+</html>
