@@ -1,0 +1,29 @@
+config:
+  target: "http://localhost:3000"
+  phases:
+    # 1. AŞAMA: LOAD TESTING (Isınma Turu)
+    # 20 saniye boyunca, her saniye 5 yeni kullanıcı gelsin.
+    # Bu normal bir kullanım senaryosudur.
+    - duration: 20
+      arrivalRate: 5
+      name: "Normal Load (Isınma)"
+
+    # 2. AŞAMA: STRESS TESTING (Saldırı Anı)
+    # 30 saniye boyunca, kullanıcı sayısı 5'ten 100'e kadar artsın.
+    # Burada sistemin limitlerini zorluyoruz.
+    - duration: 30
+      arrivalRate: 5
+      rampTo: 100
+      name: "Stress Test (Ramp Up)"
+
+scenarios:
+  - flow:
+      # Kullanıcılar ne yapsın?
+      # 1. Önce features (harita verilerini) çeksinler (GET)
+      - get:
+          url: "/api/features"
+      # 2. Arada 1 saniye beklesinler
+      - think: 1
+      # 3. Sonra loglara baksınlar (GET)
+      - get:
+          url: "/api/logs"
